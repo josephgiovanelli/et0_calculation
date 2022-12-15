@@ -1,12 +1,15 @@
 import os
 import json
 import argparse
+import warnings
 
 import pandas as pd
 
-from utils.import_utils import readMeteoData
+from utils import readMeteoData
 from et0.penman_monteith import computeHourlyET0
 from et0.transmissivity import computeNormTransmissivity
+
+warnings.filterwarnings("ignore")
 
 
 def main(args):
@@ -20,7 +23,10 @@ def main(args):
     weatherData["time"] = pd.to_datetime(weatherData["timestamp"], unit="s")
 
     # Calculate ET0
+    accumulator = 0
+    df = pd.DataFrame()
     for weatherIndex in range(len(weatherData)):
+        currentObs = weatherData.loc[weatherIndex]
         normTransmissivity = computeNormTransmissivity(
             weatherData,
             weatherIndex,
@@ -30,15 +36,26 @@ def main(args):
         )
         ET0 = computeHourlyET0(
             properties["altitude"],
-            weatherData.loc[weatherIndex, "air_temperature"],
-            weatherData.loc[weatherIndex, "solar_radiation"],
-            weatherData.loc[weatherIndex, "air_humidity"],
-            weatherData.loc[weatherIndex, "wind_speed"],
+            currentObs["air_temperature"],
+            currentObs["solar_radiation"],
+            currentObs["air_humidity"],
+            currentObs["wind_speed"],
             normTransmissivity,
         )
-        print(
-            f"""timestamp: {weatherData.loc[weatherIndex, "timestamp"]}, ET0: {format(ET0, ".2f")}"""
-        )
+        accumulator += ET0
+        if pd.to_datetime(currentObs["timestamp"], unit="s").hour == 3:
+            df = df.append(
+                {
+                    "timestamp": currentObs["timestamp"].astype(int),
+                    "et0": accumulator,
+                },
+                ignore_index=True,
+            )
+            df.to_csv(
+                os.path.join(args.path, "et0", "penman_monteith.csv"), index=False
+            )
+            accumulator = 0
+        print(f"""timestamp: {currentObs["timestamp"]}, ET0: {format(ET0, ".2f")}""")
 
 
 def parse_args():
