@@ -46,11 +46,12 @@ def main(args):
         if pd.to_datetime(currentObs["timestamp"], unit="s").hour == 3:
             df = df.append(
                 {
-                    "timestamp": currentObs["timestamp"].astype(int),
+                    "timestamp": currentObs["timestamp"],
                     "et0": accumulator,
                 },
                 ignore_index=True,
             )
+            df["timestamp"] = df["timestamp"].astype(int)
             df.to_csv(
                 os.path.join(args.path, "et0", "penman_monteith.csv"), index=False
             )
