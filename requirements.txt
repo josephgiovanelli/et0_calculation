@@ -2,4 +2,4 @@ numpy
 pandas
 matplotlib
 psutil
-tzwhere
+scipy
