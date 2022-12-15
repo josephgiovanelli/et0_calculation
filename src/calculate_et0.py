@@ -23,8 +23,7 @@ def main(args):
     weatherData["time"] = pd.to_datetime(weatherData["timestamp"], unit="s")
 
     # Calculate ET0
-    accumulator = 0
-    df = pd.DataFrame()
+    et0_df = pd.DataFrame()
     for weatherIndex in range(len(weatherData)):
         currentObs = weatherData.loc[weatherIndex]
         normTransmissivity = computeNormTransmissivity(
@@ -42,21 +41,21 @@ def main(args):
             currentObs["wind_speed"],
             normTransmissivity,
         )
-        accumulator += ET0
-        if pd.to_datetime(currentObs["timestamp"], unit="s").hour == 3:
-            df = df.append(
-                {
-                    "timestamp": currentObs["timestamp"],
-                    "et0": accumulator,
-                },
-                ignore_index=True,
-            )
-            df["timestamp"] = df["timestamp"].astype(int)
-            df.to_csv(
-                os.path.join(args.path, "et0", "penman_monteith.csv"), index=False
-            )
-            accumulator = 0
+        et0_df = et0_df.append(
+            {
+                "timestamp": currentObs["timestamp"],
+                "et0": ET0,
+            },
+            ignore_index=True,
+        )
         print(f"""timestamp: {currentObs["timestamp"]}, ET0: {format(ET0, ".2f")}""")
+
+    # Export ET0
+    et0_df["group"] = et0_df.index / 24
+    et0_df["group"] = et0_df["group"].astype(int)
+    et0_df = et0_df.groupby("group").agg({"timestamp": "last", "et0": "sum"})
+    et0_df["timestamp"] = et0_df["timestamp"].astype(int)
+    et0_df.to_csv(os.path.join(args.path, "et0", "penman_monteith.csv"), index=False)
 
 
 def parse_args():
