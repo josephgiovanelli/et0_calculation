@@ -24,7 +24,7 @@ There are two options:
 
 # doc
 
-- ```doc.pdf```: documentation explaining the semantic of the data
+- ```doc.pdf```: documentation explaining the semantic of the data (our field is ```T1 basso```)
 - ```water_content_to_water_quantity```: link to a Google Sheet explaining the calulation of the water quantity from the water content (and the volume and teh density of each cell)
 
 # scripts
