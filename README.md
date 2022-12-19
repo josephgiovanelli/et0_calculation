@@ -9,6 +9,7 @@ There are two options:
 
 - ```.devcontainer```: configuration to instantiate a dev container w/ vscode
 - ```data```: raw agro data for the analysis
+- ```doc```: documentation explaining data and related semantic
 - ```scripts```: starting point for reproducibility
 - ```src```: source code
 
@@ -20,6 +21,11 @@ There are two options:
 - ```raw_obs```: samples of the water potential sensors and the related water content values (exploiting an ad-hoc retention curve)
 - ```sim```: fine grained soil moisture profiles extracted from a soil & crop simulator
 - ```water```: precipitation and irrigation data
+
+# doc
+
+- ```doc.pdf```: documentation explaining the semantic of the data
+- ```water_content_to_water_quantity```: link to a Google Sheet explaining the calulation of the water quantity from the water content (and the volume and teh density of each cell)
 
 # scripts
 
