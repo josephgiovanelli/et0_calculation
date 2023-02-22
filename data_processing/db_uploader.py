@@ -78,13 +78,13 @@ def sim_to_db(wc_path,initialState,costMatrix,approach,valueType,valueTypeId,con
   print("Done")
 
 #Uploads into transcoding_field
-def transcoding_field(conn):
+def transcoding_field(refStrucutreName,companyName,fieldName,conn):
   print("Uploading transcoding_field datas...")
   nodeId =['ground_potential','meteo']
   new_df = []
-  for approach in utils.APPROACHES:
-    for initialState in utils.INITIAL_STATE:
-      for cm in utils.COST_MATRIX:
+  for approach in fieldName:
+    for initialState in refStrucutreName:
+      for cm in companyName:
         for node_id in nodeId:
           if not (approach == 'FARMER' and cm == 'WITH'):
             new_df.append([utils.SOURCE,utils.STRUCTURE_ID,utils.COMPANY_ID,utils.FIELD_ID,utils.PLANT_ID,node_id,initialState,cm,approach,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,'','','',True,utils.XXPROFILE,0, utils.ZZPROFILE,utils.SENSORS_NUMBER])
@@ -118,12 +118,12 @@ def humidity_bin(pot_path,initialState,costMatrix,approach,conn):
   return new_df
 
 #Uploads into user_in_plant
-def user_in_plant(conn):
+def user_in_plant(refStrucutreName,companyName,fieldName,conn):
   print("Uploading user_in_plant datas...")
   new_df = []
-  for approach in utils.APPROACHES:
-    for initialState in utils.INITIAL_STATE:
-      for cm in utils.COST_MATRIX:
+  for approach in fieldName:
+    for initialState in refStrucutreName:
+      for cm in companyName:
         if not (approach == 'FARMER' and cm == 'WITH'):
           new_df.append([utils.SOURCE,initialState,cm,approach,utils.PLANT_NUM,utils.PLANT_ROW,utils.USER_ID,utils.WATERING_ADVICE])
   new_df = pd.DataFrame(new_df,columns = utils.USER_IN_PLANT)
