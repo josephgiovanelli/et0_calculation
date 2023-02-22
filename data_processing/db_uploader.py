@@ -69,9 +69,9 @@ def sim_to_db(wc_path,initialState,costMatrix,approach,valueType,valueTypeId,con
         print("Error while retrieving params: "+ error)
 
     if(valueType == "meteo" or valueTypeId == "DRIPPER"):
-      new_df.append([utils.SOURCE,utils.STRUCTURE_ID,initialState,utils.COMPANY_ID,costMatrix,utils.FIELD_ID,approach,utils.PLANT_ID,'',utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,valueType,'',detectedValueTypeId,detectedValueDescription,z,x,row['value'],unit,datetime.fromtimestamp(row['variable']),datetime.fromtimestamp(row['variable']).strftime("%H:%M:%S"),utils.LATITUDE,utils.LONGITUDE,int(row['variable']),None])
+      new_df.append([utils.SOURCE,utils.STRUCTURE_ID,initialState,utils.COMPANY_ID,costMatrix,utils.FIELD_ID,approach,utils.PLANT_ID,utils.PLANT_NAME,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,valueType,utils.NODE_DESCRIPTION,detectedValueTypeId,detectedValueDescription,z,x,row['value'],unit,datetime.fromtimestamp(row['variable']),datetime.fromtimestamp(row['variable']).strftime("%H:%M:%S"),utils.LATITUDE,utils.LONGITUDE,int(row['variable']),None])
     else:
-      new_df.append([utils.SOURCE,utils.STRUCTURE_ID,initialState,utils.COMPANY_ID,costMatrix,utils.FIELD_ID,approach,utils.PLANT_ID,'',utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,valueType,'',detectedValueTypeId,detectedValueDescription,z,x,row['value'],unit,datetime.fromtimestamp(row['timestamp']),datetime.fromtimestamp(row['timestamp']).strftime("%H:%M:%S"),utils.LATITUDE,utils.LONGITUDE,int(row['timestamp']),None])
+      new_df.append([utils.SOURCE,utils.STRUCTURE_ID,initialState,utils.COMPANY_ID,costMatrix,utils.FIELD_ID,approach,utils.PLANT_ID,utils.PLANT_NAME,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,valueType,utils.NODE_DESCRIPTION,detectedValueTypeId,detectedValueDescription,z,x,row['value'],unit,datetime.fromtimestamp(row['timestamp']),datetime.fromtimestamp(row['timestamp']).strftime("%H:%M:%S"),utils.LATITUDE,utils.LONGITUDE,int(row['timestamp']),None])
      
   new_df = pd.DataFrame(new_df,columns = utils.VIEW_DATA_ORIGINAL)
   insert_with_string_io(new_df,"view_data_original",conn)
@@ -82,12 +82,8 @@ def transcoding_field(refStrucutreName,companyName,fieldName,conn):
   print("Uploading transcoding_field datas...")
   nodeId =['ground_potential','meteo']
   new_df = []
-  for approach in fieldName:
-    for initialState in refStrucutreName:
-      for cm in companyName:
-        for node_id in nodeId:
-          if not (approach == 'FARMER' and cm == 'WITH'):
-            new_df.append([utils.SOURCE,utils.STRUCTURE_ID,utils.COMPANY_ID,utils.FIELD_ID,utils.PLANT_ID,node_id,initialState,cm,approach,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,'','','',True,utils.XXPROFILE,0, utils.ZZPROFILE,utils.SENSORS_NUMBER])
+  for node_id in nodeId:
+    new_df.append([utils.SOURCE,utils.STRUCTURE_ID,utils.COMPANY_ID,utils.FIELD_ID,utils.PLANT_ID,node_id,refStrucutreName,companyName,fieldName,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,utils.PARCEL_CODE,utils.ADDRESS,utils.REF_NODE,True,utils.XXPROFILE,utils.YY_PROFILE, utils.ZZPROFILE,utils.SENSORS_NUMBER])
 
   new_df = pd.DataFrame(new_df,columns = utils.TRANSCODING_FIELD)
   insert_with_string_io(new_df,'transcoding_field',conn)
@@ -121,11 +117,7 @@ def humidity_bin(pot_path,initialState,costMatrix,approach,conn):
 def user_in_plant(refStrucutreName,companyName,fieldName,conn):
   print("Uploading user_in_plant datas...")
   new_df = []
-  for approach in fieldName:
-    for initialState in refStrucutreName:
-      for cm in companyName:
-        if not (approach == 'FARMER' and cm == 'WITH'):
-          new_df.append([utils.SOURCE,initialState,cm,approach,utils.PLANT_NUM,utils.PLANT_ROW,utils.USER_ID,utils.WATERING_ADVICE])
+  new_df.append([utils.SOURCE,refStrucutreName,companyName,fieldName,utils.PLANT_NUM,utils.PLANT_ROW,utils.USER_ID,utils.WATERING_ADVICE])
   new_df = pd.DataFrame(new_df,columns = utils.USER_IN_PLANT)
   insert_with_string_io(new_df , 'user_in_plant',conn)
   print("Done")

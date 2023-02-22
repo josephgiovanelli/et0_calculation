@@ -13,9 +13,6 @@ HUMIDITY_BIN = ['timestamp','umidity_bin','count','refStructureName','companyNam
 INTERPOLATED = ['xx','yy','value','refStructureName','companyName','fieldName','plantNum','plantRow','timestamp','dumpId','zz']
 
 #Simulation params
-INITIAL_STATE = ['WET','DRY','OPT']
-APPROACHES = ['ET0','FORMULA','ET0 + DELTA','FARMER']
-COST_MATRIX = ['WITH','WITHOUT']
 HUM_BINS = [0,30,100,300,1500,10000]
 
 #Field params
@@ -33,8 +30,14 @@ PLANT_ID = 1509
 COLTURE = "Kiwi"
 COLTURE_TYPE = "G3"
 XXPROFILE = 100
+YY_PROFILE = 0
 ZZPROFILE = -60
 SENSORS_NUMBER = 12
+PLANT_NAME = ''
+NODE_DESCRIPTION = ''
+PARCEL_CODE = ''
+ADDRESS = ''
+REF_NODE = ''
 
 #Data granularity
 X = ['z20','z40','z60']

@@ -38,9 +38,9 @@ def setup_connection():
 conn = setup_connection()
 
 #upload user_in_plant // first three parms are lists
-db_uploader.user_in_plant(utils.INITIAL_STATE,utils.COST_MATRIX,utils.APPROACHES,conn)
+db_uploader.user_in_plant(INITIAL_STATE,COST_MATRIX,APPROACH,conn)
 #upload transcoding_field // first three parms are lists
-db_uploader.transcoding_field(utils.INITIAL_STATE,utils.COST_MATRIX,utils.APPROACHES,conn)
+db_uploader.transcoding_field(INITIAL_STATE,COST_MATRIX,APPROACH,conn)
 #upload wc
 db_uploader.sim_to_db(WC_PATH,INITIAL_STATE,COST_MATRIX,APPROACH,utils.get_value_type('wc'),utils.get_value_type_id('wc'),conn)
 #upload irrigation
