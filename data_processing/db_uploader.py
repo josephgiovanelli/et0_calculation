@@ -40,8 +40,8 @@ def get_params(sensor_id,valueTypeId,conn):
   return x,z,unit,detectedValueTypeId, detectedValueType
 
 #Uploads WC or Irrigation
-def sim_to_db(wc_path,initialState,costMatrix,approach,valueType,valueTypeId,conn):
-  print("Uploading from "+str(wc_path.split('/')[len(wc_path.split('/'))-1])+" "+initialState+" - "+costMatrix+" cost matrix - "+str(approach))
+def sim_to_db(wc_path,valueType,valueTypeId,conn):
+  print("Uploading from "+str(wc_path.split('/')[len(wc_path.split('/'))-1])+" "+str(utils.INITIAL_STATE)+" - "+str(utils.COST_MATRIX)+" cost matrix - "+str(utils.APPROACH))
   if(valueType == "meteo" or valueTypeId == "DRIPPER"):
     dataset = pd.read_csv(wc_path)
     dataset = dataset.rename(columns={dataset.columns[0]: 'variable',dataset.columns[1]:'value'})
@@ -69,21 +69,21 @@ def sim_to_db(wc_path,initialState,costMatrix,approach,valueType,valueTypeId,con
         print("Error while retrieving params: "+ error)
 
     if(valueType == "meteo" or valueTypeId == "DRIPPER"):
-      new_df.append([utils.SOURCE,utils.STRUCTURE_ID,initialState,utils.COMPANY_ID,costMatrix,utils.FIELD_ID,approach,utils.PLANT_ID,utils.PLANT_NAME,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,valueType,utils.NODE_DESCRIPTION,detectedValueTypeId,detectedValueDescription,z,x,row['value'],unit,datetime.fromtimestamp(row['variable']),datetime.fromtimestamp(row['variable']).strftime("%H:%M:%S"),utils.LATITUDE,utils.LONGITUDE,int(row['variable']),None])
+      new_df.append([utils.SOURCE,utils.STRUCTURE_ID,utils.INITIAL_STATE,utils.COMPANY_ID,utils.COST_MATRIX,utils.FIELD_ID,utils.APPROACH,utils.PLANT_ID,utils.PLANT_NAME,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,valueType,utils.NODE_DESCRIPTION,detectedValueTypeId,detectedValueDescription,z,x,row['value'],unit,datetime.fromtimestamp(row['variable']),datetime.fromtimestamp(row['variable']).strftime("%H:%M:%S"),utils.LATITUDE,utils.LONGITUDE,int(row['variable']),None])
     else:
-      new_df.append([utils.SOURCE,utils.STRUCTURE_ID,initialState,utils.COMPANY_ID,costMatrix,utils.FIELD_ID,approach,utils.PLANT_ID,utils.PLANT_NAME,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,valueType,utils.NODE_DESCRIPTION,detectedValueTypeId,detectedValueDescription,z,x,row['value'],unit,datetime.fromtimestamp(row['timestamp']),datetime.fromtimestamp(row['timestamp']).strftime("%H:%M:%S"),utils.LATITUDE,utils.LONGITUDE,int(row['timestamp']),None])
+      new_df.append([utils.SOURCE,utils.STRUCTURE_ID,utils.initialState,utils.COMPANY_ID,utils.COST_MATRIX,utils.FIELD_ID,utils.APPROACH,utils.PLANT_ID,utils.PLANT_NAME,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,valueType,utils.NODE_DESCRIPTION,detectedValueTypeId,detectedValueDescription,z,x,row['value'],unit,datetime.fromtimestamp(row['timestamp']),datetime.fromtimestamp(row['timestamp']).strftime("%H:%M:%S"),utils.LATITUDE,utils.LONGITUDE,int(row['timestamp']),None])
      
   new_df = pd.DataFrame(new_df,columns = utils.VIEW_DATA_ORIGINAL)
   insert_with_string_io(new_df,"view_data_original",conn)
   print("Done")
 
 #Uploads into transcoding_field
-def transcoding_field(refStrucutreName,companyName,fieldName,conn):
+def transcoding_field(conn):
   print("Uploading transcoding_field datas...")
   nodeId =['ground_potential','meteo']
   new_df = []
   for node_id in nodeId:
-    new_df.append([utils.SOURCE,utils.STRUCTURE_ID,utils.COMPANY_ID,utils.FIELD_ID,utils.PLANT_ID,node_id,refStrucutreName,companyName,fieldName,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,utils.PARCEL_CODE,utils.ADDRESS,utils.REF_NODE,True,utils.XXPROFILE,utils.YY_PROFILE, utils.ZZPROFILE,utils.SENSORS_NUMBER])
+    new_df.append([utils.SOURCE,utils.STRUCTURE_ID,utils.COMPANY_ID,utils.FIELD_ID,utils.PLANT_ID,node_id,utils.INITIAL_STATE,utils.COST_MATRIX,utils.APPROACH,utils.PLANT_NUM,utils.PLANT_ROW,utils.COLTURE,utils.COLTURE_TYPE,utils.PARCEL_CODE,utils.ADDRESS,utils.REF_NODE,True,utils.XXPROFILE,utils.YY_PROFILE, utils.ZZPROFILE,utils.SENSORS_NUMBER])
 
   new_df = pd.DataFrame(new_df,columns = utils.TRANSCODING_FIELD)
   insert_with_string_io(new_df,'transcoding_field',conn)
@@ -91,8 +91,8 @@ def transcoding_field(refStrucutreName,companyName,fieldName,conn):
   return pd.DataFrame(new_df,columns = utils.TRANSCODING_FIELD)
 
 #Uploads into humidity_bin
-def humidity_bin(pot_path,initialState,costMatrix,approach,conn):
-  print("Binning humidity from "+str(pot_path.split('/')[len(pot_path.split('/'))-1])+" "+initialState+" - "+costMatrix+" cost matrix - "+str(approach))
+def humidity_bin(pot_path,conn):
+  print("Binning humidity from "+str(pot_path.split('/')[len(pot_path.split('/'))-1])+" "+str(utils.INITIAL_STATE)+" - "+str(utils.COST_MATRIX)+" cost matrix - "+str(utils.APPROACH))
   dataset = pd.read_csv(pot_path)
   HUM_BINS = [0,-30,-100,-300,-1500,-10000]
   new_df = []
@@ -106,7 +106,7 @@ def humidity_bin(pot_path,initialState,costMatrix,approach,conn):
         if HUM_BINS[i] == HUM_BINS[len(HUM_BINS) - 1 ] and value >= HUM_BINS[len(HUM_BINS) - 1]:
           count = count + 1
       bin_str = '('+str(HUM_BINS[i+1])+', '+str(HUM_BINS[i])+']'
-      new_df.append([int(row['timestamp']),bin_str,count,initialState,costMatrix,approach,utils.PLANT_NUM,utils.PLANT_ROW,str(datetime.fromtimestamp(row['timestamp']))+" CEST"])
+      new_df.append([int(row['timestamp']),bin_str,count,utils.INITIAL_STATE,utils.COST_MATRIX,utils.APPROACH,utils.PLANT_NUM,utils.PLANT_ROW,str(datetime.fromtimestamp(row['timestamp']))+" CEST"])
 
   new_df = pd.DataFrame(new_df,columns = utils.HUMIDITY_BIN)
   insert_with_string_io(new_df,'humidity_bins',conn)
@@ -114,18 +114,18 @@ def humidity_bin(pot_path,initialState,costMatrix,approach,conn):
   return new_df
 
 #Uploads into user_in_plant
-def user_in_plant(refStrucutreName,companyName,fieldName,conn):
+def user_in_plant(conn):
   print("Uploading user_in_plant datas...")
   new_df = []
-  new_df.append([utils.SOURCE,refStrucutreName,companyName,fieldName,utils.PLANT_NUM,utils.PLANT_ROW,utils.USER_ID,utils.WATERING_ADVICE])
+  new_df.append([utils.SOURCE,utils.INITIAL_STATE,utils.COST_MATRIX,utils.APPROACH,utils.PLANT_NUM,utils.PLANT_ROW,utils.USER_ID,utils.WATERING_ADVICE])
   new_df = pd.DataFrame(new_df,columns = utils.USER_IN_PLANT)
   insert_with_string_io(new_df , 'user_in_plant',conn)
   print("Done")
   
 #Uploads into interpolated_data
-def load_interpolated_data(wc_path,initialState,costMatrix,approach,conn):
+def load_interpolated_data(wc_path,conn):
   
-  print("Uploading interpolated data "+str(wc_path.split('/')[len(wc_path.split('/'))-1])+" "+initialState+" - "+costMatrix+" cost matrix - "+str(approach)+"...")
+  print("Uploading interpolated data "+str(wc_path.split('/')[len(wc_path.split('/'))-1])+" "+str(utils.INITIAL_STATE)+" - "+str(utils.COST_MATRIX)+" cost matrix - "+str(utils.APPROACH)+"...")
   df = pd.read_csv(wc_path)
   outDF = pd.DataFrame(columns = ['timestamp','variable','value'])
 
@@ -140,7 +140,7 @@ def load_interpolated_data(wc_path,initialState,costMatrix,approach,conn):
     sensor_id = row['variable']
     z = abs(int(sensor_id[sensor_id.find('z')+1:sensor_id.find('z')+3].replace('_','')))
     x =  int(sensor_id[sensor_id.find('x')+1:sensor_id.find('x')+3].replace('_',''))
-    new_df.append([x,z,row['value'],initialState,costMatrix,approach,utils.PLANT_NUM,utils.PLANT_ROW,int(row['timestamp']),str(datetime.fromtimestamp(row['timestamp']))+" CEST",0])
+    new_df.append([x,z,row['value'],utils.INITIAL_STATE,utils.COST_MATRIX,utils.APPROACH,utils.PLANT_NUM,utils.PLANT_ROW,int(row['timestamp']),str(datetime.fromtimestamp(row['timestamp']))+" CEST",0])
   new_df = pd.DataFrame(new_df,columns = utils.INTERPOLATED)
   insert_with_string_io(new_df , 'data_interpolated',conn)
   print("Done")

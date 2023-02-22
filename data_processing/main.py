@@ -4,16 +4,13 @@ import os
 from sshtunnel import SSHTunnelForwarder
 from psycopg2 import connect
 
-SSH_USERNAME = ""
-SSH_PSW = ""
+SSH_USERNAME = "manuele.pasini@studio.unibo.it"
+SSH_PSW = "1234test*"
 
-INITIAL_STATE = "WET"
-COST_MATRIX = "WITH"
-APPROACH = "ET0 + DELTA"
 
 DATA_PATH = "data"
 METEO_PATH =  os.path.join(DATA_PATH,'meteo')
-GROUND_PATH = os.path.join(DATA_PATH,"approaches",COST_MATRIX.lower()+"costmatrix",INITIAL_STATE.lower(),APPROACH.lower())
+GROUND_PATH = os.path.join(DATA_PATH,"approaches",utils.COST_MATRIX.lower()+"costmatrix",utils.INITIAL_STATE.lower(),utils.APPROACH.lower())
 
 IRRIGATION_PATH = os.path.join(GROUND_PATH,"scheduledIrrigation.csv")
 WC_PATH = os.path.join(GROUND_PATH,"outputWaterContent.csv")
@@ -38,20 +35,20 @@ def setup_connection():
 conn = setup_connection()
 
 #upload user_in_plant // first three parms are lists
-db_uploader.user_in_plant(INITIAL_STATE,COST_MATRIX,APPROACH,conn)
+db_uploader.user_in_plant(conn)
 #upload transcoding_field // first three parms are lists
-db_uploader.transcoding_field(INITIAL_STATE,COST_MATRIX,APPROACH,conn)
+db_uploader.transcoding_field(conn)
 #upload wc
-db_uploader.sim_to_db(WC_PATH,INITIAL_STATE,COST_MATRIX,APPROACH,utils.get_value_type('wc'),utils.get_value_type_id('wc'),conn)
+db_uploader.sim_to_db(WC_PATH,utils.get_value_type('wc'),utils.get_value_type_id('wc'),conn)
 #upload irrigation
-db_uploader.sim_to_db(IRRIGATION_PATH,INITIAL_STATE,COST_MATRIX,APPROACH,utils.get_value_type('irrigation'),utils.get_value_type_id('irrigation'),conn)
+db_uploader.sim_to_db(IRRIGATION_PATH,utils.get_value_type('irrigation'),utils.get_value_type_id('irrigation'),conn)
 #upload humidity_bin
-db_uploader.humidity_bin(WP_PATH,INITIAL_STATE,COST_MATRIX,APPROACH,conn)
+db_uploader.humidity_bin(WP_PATH,conn)
 #upload interpolated data
-db_uploader.load_interpolated_data(WP_PATH,INITIAL_STATE,COST_MATRIX,APPROACH,conn)
+db_uploader.load_interpolated_data(WP_PATH,conn)
 
 #upload meteo
 for i in range (0,len(METEO_FILES)):
-    db_uploader.sim_to_db(os.path.join(METEO_PATH,METEO_FILES[i]),INITIAL_STATE,COST_MATRIX,APPROACH, utils.get_value_type(METEO_FILES[i].split('.')[0]),utils.get_value_type_id(METEO_FILES[i].split('.')[0]),conn)
+    db_uploader.sim_to_db(os.path.join(METEO_PATH,METEO_FILES[i]),utils.INITIAL_STATE,utils.COST_MATRIX,utils.APPROACH, utils.get_value_type(METEO_FILES[i].split('.')[0]),utils.get_value_type_id(METEO_FILES[i].split('.')[0]),conn)
 conn.close()
 
