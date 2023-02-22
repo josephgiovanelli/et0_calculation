@@ -49,6 +49,6 @@ db_uploader.load_interpolated_data(WP_PATH,conn)
 
 #upload meteo
 for i in range (0,len(METEO_FILES)):
-    db_uploader.sim_to_db(os.path.join(METEO_PATH,METEO_FILES[i]),utils.INITIAL_STATE,utils.COST_MATRIX,utils.APPROACH, utils.get_value_type(METEO_FILES[i].split('.')[0]),utils.get_value_type_id(METEO_FILES[i].split('.')[0]),conn)
+    db_uploader.sim_to_db(os.path.join(METEO_PATH,METEO_FILES[i]), utils.get_value_type(METEO_FILES[i].split('.')[0]),utils.get_value_type_id(METEO_FILES[i].split('.')[0]),conn)
 conn.close()
 
