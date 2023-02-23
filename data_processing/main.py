@@ -13,7 +13,7 @@ METEO_PATH = os.path.join(DATA_PATH, "meteo")
 GROUND_PATH = os.path.join(
     DATA_PATH,
     "approaches",
-    utils.COST_MATRIX.lower() + "costmatrix",
+    utils.COST_MATRIX.lower(),
     utils.INITIAL_STATE.lower(),
     utils.APPROACH.lower(),
 )
@@ -31,21 +31,19 @@ METEO_FILES = [
 
 
 def setup_connection():
-    server = SSHTunnelForwarder(
-        ("isi-alfa.csr.unibo.it", 22),
-        ssh_username=SSH_USERNAME,
-        ssh_password=SSH_PSW,
-        remote_bind_address=("137.204.74.52", 5432),
-        local_bind_address=("127.0.0.1", 23349),
-    )
-    server.start()
+    #   server = SSHTunnelForwarder(('isi-alfa.csr.unibo.it', 22),
+    #                               ssh_username= SSH_USERNAME,
+    #                               ssh_password= SSH_PSW,
+    #                               remote_bind_address=('137.204.74.52', 5432),
+    #                               local_bind_address=('127.0.0.1', 23349))
+    #   server.start()
     print("SSH OK")
     return connect(
         database="smart_irrigation",
         user="root",
-        host=server.local_bind_host,
-        port=server.local_bind_port,
-        password="smart_irrigation",
+        host="137.204.74.53",
+        port=5432,
+        password="criteria",
     )
 
 
