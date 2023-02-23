@@ -30,7 +30,6 @@ def melt(df):
 
 
 def interpolate(group_key, group_df, support_df):
-
     interpolated_group_df = group_df.copy()
     interpolated_group_df = interpolated_group_df.sort_values(by=["x", "y", "z"])
 
@@ -132,7 +131,6 @@ def interpolate(group_key, group_df, support_df):
 
 
 def expand_profile(interpolated_df, support_df):
-
     if support_df["x"]["extend"] != None:
         unique_zs = interpolated_df["z"].unique()
         unique_ys = interpolated_df["y"].unique()
@@ -217,6 +215,7 @@ def get_support_df(df):
 def main(args):
     # Load data
     df = pd.read_csv(args.input_file)
+    df = df.loc[:, pd.read_csv("data/raw_obs/water_potential.csv").columns]
 
     # Get a support_df
     support_df = get_support_df(df)
@@ -246,8 +245,14 @@ def main(args):
     pivoted_df["timestamp"] = pivoted_df["timestamp"].astype(int)
 
     # Load sim data and give the same column order
-    sim_data = pd.read_csv("data/sim/water_potential.csv")
-    pivoted_df.columns = sim_data.columns
+    pivoted_df = pivoted_df.loc[
+        :,
+        [
+            x
+            for x in list(pd.read_csv("data/sim/water_potential.csv").columns)
+            if not (x.startswith("z5_") or x.startswith("z10_") or x.startswith("z15_"))
+        ],
+    ]
 
     # Export the DataFrame
     pivoted_df.to_csv(args.output_file, index=False)
