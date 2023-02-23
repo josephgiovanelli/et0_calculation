@@ -138,7 +138,7 @@ def sim_to_db(wc_path, valueType, valueTypeId, conn):
                 [
                     utils.SOURCE,
                     utils.STRUCTURE_ID,
-                    utils.initialState,
+                    utils.INITIAL_STATE,
                     utils.COMPANY_ID,
                     utils.COST_MATRIX,
                     utils.FIELD_ID,
