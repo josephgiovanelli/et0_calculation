@@ -25,18 +25,8 @@ def prepare_dataset(path):
 
 def get_params(sensor_id, valueTypeId, conn):
     if isinstance(sensor_id, str):
-        z = -abs(
-            int(
-                sensor_id[sensor_id.find("z") + 1 : sensor_id.find("z") + 3].replace(
-                    "_", ""
-                )
-            )
-        )
-        x = int(
-            sensor_id[sensor_id.find("x") + 1 : sensor_id.find("x") + 3].replace(
-                "_", ""
-            )
-        )
+        z = int(sensor_id.split("_")[0].replace("z", ""))
+        x = int(sensor_id.split("_")[2].replace("x", ""))
         conn.execute(
             """SELECT * FROM transcoding_sensor WHERE "detectedValueTypeId" = %s AND xx = %s AND yy = %s""",
             [
@@ -315,18 +305,8 @@ def load_interpolated_data(wc_path, conn):
     new_df = []
     for _, row in outDF.iterrows():
         sensor_id = row["variable"]
-        z = abs(
-            int(
-                sensor_id[sensor_id.find("z") + 1 : sensor_id.find("z") + 3].replace(
-                    "_", ""
-                )
-            )
-        )
-        x = int(
-            sensor_id[sensor_id.find("x") + 1 : sensor_id.find("x") + 3].replace(
-                "_", ""
-            )
-        )
+        z = int(sensor_id.split("_")[0].replace("z", ""))
+        x = int(sensor_id.split("_")[2].replace("x", ""))
         new_df.append(
             [
                 x,
