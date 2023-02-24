@@ -25,7 +25,7 @@ def prepare_dataset(path):
 
 def get_params(sensor_id, valueTypeId, conn):
     if isinstance(sensor_id, str):
-        z = int(sensor_id.split("_")[0].replace("z", ""))
+        z = -int(sensor_id.split("_")[0].replace("z", ""))
         x = int(sensor_id.split("_")[2].replace("x", ""))
         conn.execute(
             """SELECT * FROM transcoding_sensor WHERE "detectedValueTypeId" = %s AND xx = %s AND yy = %s""",
@@ -334,7 +334,7 @@ def insert_with_string_io(df: pd.DataFrame, schema, conn):
     with conn.cursor() as cursor:
         try:
             cursor.copy_expert(
-                "COPY smart_irrigation.public."
+                "COPY criteria.public."
                 + schema
                 + " FROM STDIN (FORMAT 'csv', HEADER false)",
                 buffer,

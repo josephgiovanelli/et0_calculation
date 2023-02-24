@@ -39,7 +39,7 @@ def setup_connection():
     #   server.start()
     print("SSH OK")
     return connect(
-        database="smart_irrigation",
+        database="criteria",
         user="root",
         host="137.204.74.53",
         port=5432,
