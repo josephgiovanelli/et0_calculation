@@ -215,6 +215,7 @@ def get_support_df(df):
 def main(args):
     # Load data
     df = pd.read_csv(args.input_file)
+    df = df.interpolate(method="linear", limit_direction="forward", axis=0)
     df = df.loc[:, pd.read_csv("data/raw_obs/water_potential.csv").columns]
 
     # Get a support_df
